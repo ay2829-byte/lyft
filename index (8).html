@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Driver Quality Coach: a product concept for Lyft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1EEF4; --surface:#FFFFFF; --text:#1B1626; --muted:#5F5770; --line:#DCD6E4;
+  --brand:#B8087F; --brand-ink:#FFFFFF; --soft:#F8E4F2;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15111C; --surface:#211B2C; --text:#F2EEF7; --muted:#B4AAC6; --line:#3A3149;
+    --brand:#FF6BC9; --brand-ink:#15111C; --soft:#3A1F33;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15111C; --surface:#211B2C; --text:#F2EEF7; --muted:#B4AAC6; --line:#3A3149;
+  --brand:#FF6BC9; --brand-ink:#15111C; --soft:#3A1F33;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Bricolage Grotesque','Figtree',system-ui,sans-serif;line-height:1.15;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--brand)}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+
+/* page chrome */
+.top{max-width:1120px;margin:0 auto;padding:22px 20px 0;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+.name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:20px}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tabs button{border:0;background:transparent;padding:8px 18px;border-radius:999px;font-weight:600;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--text);color:var(--bg)}
+main{max-width:1120px;margin:0 auto;padding:22px 20px 60px}
+.hidden{display:none !important}
+
+/* prototype stage */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:56px;align-items:start}
+.side h1{font-size:clamp(32px,4.4vw,48px);letter-spacing:-.02em;max-width:14ch}
+.side .lede{font-size:18px;color:var(--muted);max-width:44ch;margin:14px 0 26px}
+.try{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px 20px;max-width:460px}
+.try h2{font-size:18px;padding:16px 0 4px}
+.try ol{list-style:none;margin:0;padding:0}
+.try li{display:flex;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+.try li:first-child{border-top:0}
+.try .n{flex:0 0 28px;height:28px;border-radius:50%;background:var(--soft);color:var(--brand);display:grid;place-items:center;font-weight:700;font-size:14px}
+.try .t{flex:1;font-weight:600}
+.try .t small{display:block;font-weight:400;color:var(--muted);font-size:14px}
+.try button.go{border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 14px;font-weight:600;font-size:14px}
+.try button.go:hover{border-color:var(--brand);color:var(--brand)}
+.maps{margin:26px 0 0;max-width:460px;display:grid;gap:12px}
+.maps p{margin:0;color:var(--muted);font-size:15px}
+.maps b{color:var(--text)}
+.note{font-size:13px;color:var(--muted);margin-top:22px;max-width:46ch}
+.linkbtn{background:none;border:0;padding:0;color:var(--brand);font-weight:600;text-decoration:underline;font-size:14px}
+
+/* phone */
+.phone{
+  --a-bg:#F8F6FA;--a-card:#FFFFFF;--a-ink:#1B1626;--a-muted:#645C75;--a-line:#E6E0EE;
+  --a-pink:#C4078A;--a-pink-soft:#FCE6F5;--a-amber:#E89B00;--a-lav:#CFC6E0;--a-green:#0F7A57;
+  width:100%;max-width:390px;height:min(800px,86vh);min-height:640px;margin:0 auto;
+  background:#0E0A14;border-radius:46px;padding:10px;position:relative;
+  box-shadow:0 30px 60px rgba(20,10,40,.28);
+}
+.screen{background:var(--a-bg);color:var(--a-ink);border-radius:37px;height:100%;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.status{display:flex;justify-content:space-between;align-items:center;padding:14px 26px 4px;font-weight:700;font-size:14px}
+.batt{width:24px;height:11px;border:1.5px solid var(--a-ink);border-radius:3px;position:relative}
+.batt::after{content:"";position:absolute;inset:1.5px;right:5px;background:var(--a-ink);border-radius:1px}
+.appbar{display:flex;align-items:center;gap:8px;padding:6px 14px 8px;min-height:48px}
+.appbar .bk{border:0;background:transparent;width:36px;height:36px;border-radius:50%;display:grid;place-items:center}
+.appbar .bk:hover{background:var(--a-line)}
+.appbar .ti{font-weight:700;font-size:16px}
+#body{flex:1;overflow-y:auto;padding:0 18px 30px}
+.phone h1{font-size:30px;letter-spacing:-.02em}
+.phone h2{font-size:19px}
+.stand{display:inline-flex;align-items:center;gap:8px;margin-left:4px;padding:6px 12px;border-radius:999px;background:#DDF3EA;color:var(--a-green);font-weight:700;font-size:14px}
+.stand i{width:8px;height:8px;border-radius:50%;background:var(--a-green)}
+.kick{color:var(--a-muted);font-size:14px;margin-bottom:2px}
+.card{background:var(--a-card);border:1px solid var(--a-line);border-radius:18px;padding:16px;margin-top:14px}
+.big{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:76px;line-height:.95;letter-spacing:-.03em}
+.delta{font-size:15px;margin:8px 0 14px;color:var(--a-muted)}
+.delta b{color:var(--a-pink)}
+.grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+.dot{aspect-ratio:1;border-radius:50%;background:var(--a-lav);border:0;padding:0}
+.dot.s4{background:var(--a-amber)}
+.dot.s3,.dot.s2,.dot.s1{background:var(--a-pink)}
+.dot.new{outline:2px solid var(--a-ink);outline-offset:1.5px}
+button.dot:hover{transform:scale(1.15)}
+.cap{font-size:13px;color:var(--a-muted);margin:12px 0 0}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--a-muted);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.sec{margin:24px 0 0}
+.sec > h2{margin-bottom:2px}
+.row{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--a-card);border:1px solid var(--a-line);border-radius:14px;padding:13px 14px;margin-top:10px}
+.row .m{flex:1;min-width:0}
+.row .m b{display:block;font-weight:600;font-size:15px}
+.row .m span{display:block;font-size:13px;color:var(--a-muted)}
+.pill{font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.pill.dn{background:var(--a-pink-soft);color:var(--a-pink)}
+.pill.up{background:#DDF3EA;color:var(--a-green)}
+.pill.wait{background:#FFF0CF;color:#8A5B00}
+.chev{color:var(--a-muted);flex:0 0 auto}
+.focus{background:var(--a-ink);color:#fff;border-radius:20px;padding:18px;margin-top:22px}
+.focus .kick{color:#CFC6E0}
+.focus h2{font-size:22px;margin:2px 0 8px}
+.focus p{margin:0 0 14px;color:#E7E1F0;font-size:15px}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px 16px;font-weight:700;font-size:16px;background:var(--a-pink);color:#fff;text-align:center}
+.btn:disabled{background:var(--a-line);color:var(--a-muted);cursor:not-allowed}
+.btn.light{background:#fff;color:var(--a-ink)}
+.btn.ghost{background:transparent;color:var(--a-ink);border:1.5px solid var(--a-line);margin-top:10px}
+.banner{display:flex;gap:10px;align-items:flex-start;background:var(--a-pink-soft);border-radius:14px;padding:12px 14px;margin-top:14px;font-size:14px}
+.banner b{display:block}
+.star{color:var(--a-amber);letter-spacing:1px}
+.star.low{color:var(--a-pink)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{font-size:13px;background:var(--a-bg);border:1px solid var(--a-line);border-radius:999px;padding:3px 10px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:8px 12px;font-size:14px}
+.kv span:nth-child(odd){color:var(--a-muted)}
+.kv span:nth-child(even){font-weight:600;text-align:right}
+.callout{border-left:4px solid var(--a-pink);background:var(--a-card);border-radius:0 14px 14px 0;padding:12px 14px;margin-top:14px;font-size:15px}
+.steps{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:12px}
+.steps li{display:flex;gap:12px}
+.steps .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--a-pink);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;margin-top:1px}
+.steps b{display:block}
+.steps span{color:var(--a-muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:1.5px solid var(--a-line);background:var(--a-card);border-radius:999px;padding:9px 14px;font-weight:600;font-size:14px}
+.chip[aria-pressed="true"]{border-color:var(--a-pink);background:var(--a-pink-soft);color:var(--a-pink)}
+.check{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--a-card);border:1px solid var(--a-line);border-radius:14px;padding:12px 14px;margin-top:8px}
+.check .bx{flex:0 0 22px;height:22px;border-radius:6px;border:2px solid var(--a-line);display:grid;place-items:center;color:#fff;font-size:14px;font-weight:700}
+.check[aria-pressed="true"] .bx{background:var(--a-pink);border-color:var(--a-pink)}
+.check .m b{display:block;font-size:15px;font-weight:600}
+.check .m span{font-size:13px;color:var(--a-muted)}
+textarea{width:100%;min-height:84px;border:1.5px solid var(--a-line);border-radius:14px;padding:12px;font:inherit;font-size:15px;background:var(--a-card);color:var(--a-ink);resize:vertical;margin-top:10px}
+.switch{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;background:var(--a-card);border:1px solid var(--a-line);border-radius:14px;padding:14px;margin-top:16px;text-align:left}
+.switch b{display:block;font-size:15px}
+.switch span.s{font-size:13px;color:var(--a-muted)}
+.tg{flex:0 0 46px;height:28px;border-radius:999px;background:var(--a-line);position:relative;transition:background .15s}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .15s}
+.switch[aria-pressed="true"] .tg{background:var(--a-pink)}
+.switch[aria-pressed="true"] .tg::after{transform:translateX(18px)}
+.tl{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:0}
+.tl li{display:flex;gap:14px;padding-bottom:18px;position:relative}
+.tl li::before{content:"";position:absolute;left:11px;top:26px;bottom:0;width:2px;background:var(--a-line)}
+.tl li:last-child::before{display:none}
+.tl .n{flex:0 0 24px;height:24px;border-radius:50%;background:var(--a-line);display:grid;place-items:center;font-size:12px;font-weight:700}
+.tl li.done .n{background:var(--a-green);color:#fff}
+.tl b{display:block;font-size:15px}
+.tl span{font-size:14px;color:var(--a-muted)}
+.toast{position:absolute;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--a-ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .2s;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.fine{font-size:13px;color:var(--a-muted);margin:12px 0 0;text-align:center}
+
+/* brief */
+.brief{max-width:760px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,52px)}
+.brief h1{font-size:clamp(30px,5vw,44px);letter-spacing:-.02em}
+.brief .sub{color:var(--muted);font-size:18px;margin:10px 0 0}
+.brief h2{font-size:22px;margin:34px 0 10px;letter-spacing:-.01em}
+.brief p,.brief li{max-width:68ch}
+.brief ul,.brief ol{padding-left:20px;margin:10px 0}
+.brief li{margin:8px 0}
+.brief .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.brief .box{border:1px solid var(--line);border-radius:14px;padding:4px 18px 10px}
+.brief .box h3{font-size:16px;margin:14px 0 4px}
+.brief .src{font-size:14px;color:var(--muted)}
+.brief .src li{margin:4px 0}
+.brief .fine2{font-size:14px;color:var(--muted)}
+
+@media (max-width:940px){
+  .stage{grid-template-columns:1fr;gap:34px}
+  .phone{order:-1}
+  .side h1{max-width:none}
+}
+@media (max-width:640px){
+  .brief .cols{grid-template-columns:1fr}
+  .phone{height:min(760px,88vh)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="name">Driver Quality Coach</div>
+  <div class="tabs" role="tablist" aria-label="View">
+    <button role="tab" id="tab-proto" aria-selected="true" data-act="tab" data-v="proto">Prototype</button>
+    <button role="tab" id="tab-brief" aria-selected="false" data-act="tab" data-v="brief">One page brief</button>
+  </div>
+</header>
+
+<main>
+  <!-- PROTOTYPE -->
+  <section id="view-proto" class="stage" aria-label="Prototype">
+    <div class="side">
+      <h1>Help drivers see why their quality standing moved.</h1>
+      <p class="lede">A weekly coach for Lyft drivers. It explains the number, points to one thing worth changing, and gives a fair way to push back when a rating looks wrong.</p>
+
+      <div class="try">
+        <h2>Try it in three taps</h2>
+        <ol>
+          <li><span class="n">1</span><span class="t">See what moved the week<small>Start on the home screen</small></span><button class="go" data-act="jump" data-s="home">Open</button></li>
+          <li><span class="n">2</span><span class="t">Read this week's one thing<small>A pickup tip with the reasoning shown</small></span><button class="go" data-act="jump" data-s="action">Open</button></li>
+          <li><span class="n">3</span><span class="t">Dispute the 2 star ride<small>Trip data is attached for the reviewer</small></span><button class="go" data-act="jump" data-s="dispute" data-r="r4">Open</button></li>
+        </ol>
+      </div>
+
+      <div class="maps">
+        <p><b>Understand.</b> The ten by ten grid is the last 100 rides, so a driver can see exactly what the average is made of.</p>
+        <p><b>Improve.</b> One recommendation at a time, with an honest estimate of what it is worth.</p>
+        <p><b>Trust.</b> A dispute that carries the driver's own trip data and promises a person and a timeline.</p>
+      </div>
+      <p class="note">Every number in the prototype is made up for the demo. The pain points behind it come from public driver reports, listed in the brief.</p>
+      <button class="linkbtn" data-act="reset">Reset the demo</button>
+    </div>
+
+    <div class="phone" aria-label="Driver app prototype">
+      <div class="screen">
+        <div class="status"><span>9:41</span><span class="batt" aria-hidden="true"></span></div>
+        <div id="app" style="display:flex;flex-direction:column;flex:1;min-height:0"></div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRIEF -->
+  <article id="view-brief" class="brief hidden" aria-label="One page brief">
+    <h1>Driver Quality Coach</h1>
+    <p class="sub">A product brief for the Driver Quality PM role at Lyft.</p>
+
+    <h2>The problem</h2>
+    <ul>
+      <li><b>Drivers see a number, not the story behind it.</b> A driver's rating is the average of their last 100 rides, and third party guides say drivers can't tell who left a rating. Minimums are not published and are reported to vary by city.</li>
+      <li><b>When something goes wrong, the message is a dead end.</b> Drivers describe "decision is final" notices that never say which reason applied. A Chicago driver told local news he was permanently deactivated over a complaint he says he never got to answer.</li>
+      <li><b>Regulators are paying attention.</b> In New York, council members proposed independent review before a driver can be deactivated, and the taxi workers alliance says single complaints can end a driver's access.</li>
+      <li><b>Drivers are working around the product.</b> A popular driver forum thread tells people to file arbitration after generic appeal denials. That is a sign the in app path is not trusted.</li>
+    </ul>
+
+    <h2>Goal</h2>
+    <p>A driver whose quality slips should understand why in under a minute, know the one thing most worth changing, and get a fast, human answer when a flag is wrong. This makes drivers better at the job and makes the system fairer, in that order of effort.</p>
+
+    <h2>What I would ship, in order</h2>
+    <ol>
+      <li><b>Weekly coach, read only.</b> Rating explained through the last 100 rides, what moved it, one recommendation. No policy changes, so it can launch quickly and teach us which explanations drivers act on.</li>
+      <li><b>Ride level explanations.</b> Each low rating shows the rider's tags and the driver's own trip data next to it.</li>
+      <li><b>Dispute with evidence.</b> Trip data attached automatically, driver adds a note or clip, a person reviews it inside a stated time, and the reason for the decision is written back.</li>
+    </ol>
+
+    <h2>How I would measure it</h2>
+    <div class="cols">
+      <div class="box">
+        <h3>Success</h3>
+        <ul>
+          <li>Recovery rate: drivers below their market's quality bar who are back above it within six weeks</li>
+          <li>Support contacts per quality notice</li>
+          <li>Time from dispute to decision</li>
+          <li>Drivers who say they understand the reason behind a decision</li>
+          <li>Sixty day retention for drivers who received a notice</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Guardrails for riders</h3>
+        <ul>
+          <li>Rider reported safety issues stay flat or improve</li>
+          <li>Average rider rating of drivers holds</li>
+          <li>Dispute overturn rate and repeat disputers stay in a healthy band, so the flow isn't gamed</li>
+          <li>Review queue stays inside its promised time</li>
+          <li>Coaching never nudges unsafe behavior, such as hurrying a pickup</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>The tradeoff I would watch</h2>
+    <p>Making it easier to contest a rating could raise dispute volume and weaken rider trust. The design answer is that a dispute adds driver context and trip data. It does not erase rider feedback. The trip data should also cut reviewer time per case, which is what pays for the promise of a faster answer.</p>
+
+    <h2>What I would need to learn first</h2>
+    <ul>
+      <li>Which quality signals actually trigger warnings today, and how much of that is ratings versus safety reports.</li>
+      <li>How often low ratings come with a fixable pattern, like pickup waits, versus rider mood.</li>
+      <li>What New York rules would require of any dispute process. This needs legal input before launch.</li>
+    </ul>
+    <p class="fine2">The prototype uses invented numbers and my own reading of public reports. It is a way to make the questions above concrete, not a claim about how Lyft's systems work.</p>
+
+    <h2>Sources</h2>
+    <ul class="src">
+      <li><a href="https://gridwise.io/blog/rideshare/lyft-driver-ratings-how-do-they-work" target="_blank" rel="noopener">Gridwise: how Lyft driver ratings work</a></li>
+      <li><a href="https://therideshareguy.com/ratings-game/" target="_blank" rel="noopener">The Rideshare Guy: Lyft driver ratings and disputes</a></li>
+      <li><a href="https://gridwise.io/lyft-deactivations-why-drivers-get-deactivated-how-to-get-reactivated" target="_blank" rel="noopener">Gridwise: Lyft deactivations and appeals</a></li>
+      <li><a href="https://www.cbsnews.com/chicago/news/driver-banned-from-lyft-not-allowed-appeal" target="_blank" rel="noopener">CBS Chicago: driver banned over a complaint, no appeal</a></li>
+      <li><a href="https://ny1.com/nyc/all-boroughs/traffic_and_transit/2025/06/19/uber-lyft-drivers-push-bill-to-stop-firings-from-apps-without-recourse" target="_blank" rel="noopener">NY1: New York bill on driver deactivations</a></li>
+      <li><a href="https://reddit.sentinel-team.org/posts/1kk3q0q/snapshots/2026-01-03T07%3A50%3A25.10778Z" target="_blank" rel="noopener">Driver forum thread on false complaints and arbitration</a></li>
+    </ul>
+  </article>
+</main>
+
+<script>
+(function(){
+  var $ = function(s){return document.querySelector(s)};
+
+  /* data */
+  var older = []; for (var i=0;i<92;i++) older.push(5);
+  [7,19,33,48,61,77].forEach(function(i){older[i]=4}); older[40]=3;
+
+  var RIDES = [
+    {id:'r1',when:'Mon 8:10 AM',stars:5,tags:['Friendly driver'],delta:'',note:'',data:[['Trip length','12 min'],['Pickup','Rider ready at the pin']]},
+    {id:'r2',when:'Mon 6:45 PM',stars:4,tags:['Long pickup wait'],delta:'Down 0.01',wait:5,note:'',data:[['Trip length','18 min'],['You reached the pin','6:41 PM'],['Rider got in','6:46 PM']]},
+    {id:'r3',when:'Tue 7:30 AM',stars:5,tags:[],delta:'',note:'',data:[['Trip length','9 min'],['Pickup','Rider ready at the pin']]},
+    {id:'r4',when:'Wed 9:55 PM',stars:2,tags:['Felt unsafe'],delta:'Down 0.03',note:'Felt rushed.',flag:true,data:[['Top speed','41 mph in a 40 zone'],['Hard brakes','0'],['Route','Followed the suggested route'],['Trip length','14 min']]},
+    {id:'r5',when:'Thu 5:20 PM',stars:5,tags:['Clean car'],delta:'',note:'',data:[['Trip length','22 min'],['Pickup','Rider ready at the pin']]},
+    {id:'r6',when:'Thu 8:05 PM',stars:4,tags:['Long pickup wait'],delta:'Down 0.01',wait:6,note:'',data:[['Trip length','16 min'],['You reached the pin','8:00 PM'],['Rider got in','8:06 PM']]},
+    {id:'r7',when:'Fri 11:15 PM',stars:5,tags:['Clean car'],delta:'',note:'',data:[['Trip length','11 min'],['Pickup','Rider ready at the pin']]},
+    {id:'r8',when:'Sat 1:40 AM',stars:4,tags:['Long pickup wait'],delta:'Down 0.01',wait:4,note:'',data:[['Trip length','20 min'],['You reached the pin','1:36 AM'],['Rider got in','1:40 AM']]}
+  ];
+  var REASONS = ['The comment is not accurate','Something outside my control','Wrong ride','Something else'];
+
+  var state, toastTimer;
+  function fresh(){ return {screen:'home',ride:null,stack:[],reason:null,ev:{speed:true,brake:true,route:true},file:false,note:'',remind:false,submitted:false}; }
+  state = fresh();
+
+  function byId(id){ for (var i=0;i<RIDES.length;i++) if (RIDES[i].id===id) return RIDES[i]; return null; }
+  function avg(){ var s=0,all=older.concat(RIDES.map(function(r){return r.stars})); all.forEach(function(v){s+=v}); return (s/all.length).toFixed(2); }
+  function stars(n,cls){ var s=''; for(var i=0;i<5;i++) s+= i<n?'★':'☆'; return '<span class="star '+(cls||'')+'" aria-label="'+n+' out of 5 stars">'+s+'</span>'; }
+  var chev = '<svg class="chev" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var backIcon = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function shell(title, body, showBack){
+    return '<div class="appbar">'+(showBack?'<button class="bk" data-act="back" aria-label="Back">'+backIcon+'</button>':'<span style="width:36px"></span>')+'<span class="ti">'+title+'</span></div><div id="body">'+body+'</div>';
+  }
+
+  /* screens */
+  function home(){
+    var dots='';
+    older.forEach(function(v){ dots+='<div class="dot s'+v+'"></div>'; });
+    RIDES.forEach(function(r){ dots+='<button class="dot new s'+r.stars+'" data-act="go" data-s="ride" data-r="'+r.id+'" aria-label="'+r.when+', '+r.stars+' stars"></button>'; });
+    var banner = state.submitted ? '<div class="banner"><span aria-hidden="true">&#9679;</span><div><b>Review in progress</b>Wed 9:55 PM ride. A person is checking it. Decision by Friday.</div></div>' : '';
+    var h = '<div style="padding-top:4px"><div class="kick">Sep 14 to 20</div><h1>Your week</h1></div>'
+      + banner
+      + '<section class="card"><div class="big">'+avg()+'</div>'
+      + '<p class="delta"><b>Down 0.04</b> from last week. Your goal is 4.90.</p>'
+      + '<div class="grid">'+dots+'</div>'
+      + '<div class="legend"><span><i style="background:var(--a-lav)"></i>5 stars</span><span><i style="background:var(--a-amber)"></i>4 stars</span><span><i style="background:var(--a-pink)"></i>3 or less</span></div>'
+      + '<p class="cap">Your rating is the average of your last 100 rides. Oldest are at the top left. The outlined dots are this week, and you can tap them.</p></section>'
+      + '<section class="sec"><h2>What moved it</h2>'
+      + '<button class="row" data-act="go" data-s="ride" data-r="r4"><div class="m"><b>One 2 star ride</b><span>Wednesday night</span></div><span class="pill dn">Down 0.03</span>'+chev+'</button>'
+      + '<button class="row" data-act="go" data-s="why"><div class="m"><b>Three 4 star rides</b><span>All tagged long pickup wait</span></div><span class="pill dn">Down 0.03</span>'+chev+'</button>'
+      + '<div class="row" style="cursor:default"><div class="m"><b>Five 5 star rides</b><span>They pushed older lower ratings out</span></div><span class="pill up">Up 0.02</span></div></section>'
+      + '<section class="focus"><div class="kick">Your one thing this week</div><h2>Riders waited 4 to 6 minutes at pickup</h2><p>It is behind every 4 star ride this week. Fixing it is worth about 0.03 on your rating.</p><button class="btn light" data-act="go" data-s="action">See what to try</button></section>'
+      + '<section class="sec"><button class="row" data-act="go" data-s="why"><div class="m"><b>Something look wrong?</b><span>Review this week\'s rides and ask for a second look</span></div>'+chev+'</button></section>';
+    return '<div class="appbar"><span class="stand"><i></i>Good standing</span></div><div id="body">'+h+'</div>';
+  }
+
+  function why(){
+    var h = '<div style="padding-top:4px"><div class="kick">Sep 14 to 20</div><h1>Rides this week</h1></div><p class="cap" style="margin-top:8px">Tap a ride to see the rating, the rider\'s feedback and your trip data.</p>';
+    RIDES.forEach(function(r){
+      var badge = (r.flag && state.submitted) ? '<span class="pill wait">In review</span>' : (r.delta ? '<span class="pill dn">'+r.delta+'</span>' : '');
+      h += '<button class="row" data-act="go" data-s="ride" data-r="'+r.id+'"><div class="m"><b>'+r.when+'</b><span>'+stars(r.stars, r.stars<=3?'low':'')+(r.tags.length?' &nbsp;'+r.tags.join(', '):'')+'</span></div>'+badge+chev+'</button>';
+    });
+    return shell('Rides', h, true);
+  }
+
+  function rideView(){
+    var r = byId(state.ride) || RIDES[0];
+    var h = '<div style="padding-top:4px"><div class="kick">'+r.when+'</div><h1>'+stars(r.stars, r.stars<=3?'low':'')+'</h1></div>';
+    if (r.tags.length || r.note){
+      h += '<section class="card"><h2>What the rider said</h2><div class="tags">'+r.tags.map(function(t){return '<span class="tag">'+t+'</span>'}).join('')+'</div>'+(r.note?'<p style="margin:10px 0 0">"'+r.note+'"</p>':'')+'</section>';
+    }
+    h += '<section class="card"><h2>Your trip data</h2><div class="kv" style="margin-top:10px">'+r.data.map(function(d){return '<span>'+d[0]+'</span><span>'+d[1]+'</span>'}).join('')+'</div></section>';
+    if (r.delta) h += '<p class="delta" style="margin-top:14px">Effect on your rating: <b>'+r.delta+'</b></p>';
+    if (r.flag){
+      h += '<div class="callout">Your trip data shows no speeding and no hard braking on this ride. You can add it to a review.</div>';
+      if (state.submitted) h += '<button class="btn ghost" disabled>Review in progress</button>';
+      else h += '<button class="btn" style="margin-top:16px" data-act="go" data-s="dispute" data-r="'+r.id+'">This doesn\'t look right</button>';
+    } else if (r.wait){
+      h += '<div class="callout">The rider waited '+r.wait+' minutes after you reached the pin.</div>'
+        + '<button class="btn" style="margin-top:16px" data-act="go" data-s="action">See the tip</button>'
+        + '<button class="btn ghost" data-act="go" data-s="dispute" data-r="'+r.id+'">This doesn\'t look right</button>';
+    }
+    return shell('Ride details', h, true);
+  }
+
+  function action(){
+    var h = '<div style="padding-top:4px"><div class="kick">Your one thing</div><h1>Cut the pickup wait</h1></div>'
+      + '<section class="card"><h2>What we saw</h2><p style="margin:6px 0 0">Three rides this week, all evening or late night, ended with a 4 star rating and a long pickup wait tag. In each one the rider got in 4 to 6 minutes after you reached the pin.</p>'
+      + '<p class="delta" style="margin:10px 0 0">If those three had been 5 stars, your rating would be about <b>0.03</b> higher.</p></section>'
+      + '<section class="sec"><h2>What to try</h2><ol class="steps">'
+      + '<li><span class="n">1</span><div><b>Tap "I\'ve arrived" as soon as you reach the pin</b><span>It starts the rider\'s countdown and tells them you are there.</span></div></li>'
+      + '<li><span class="n">2</span><div><b>Send the quick message with your car and spot</b><span>One tap. For example, "Grey sedan at the corner, hazards on."</span></div></li>'
+      + '<li><span class="n">3</span><div><b>Use the suggested pickup spot in busy zones</b><span>It is usually where riders can find you fastest. Never stop somewhere unsafe to save time.</span></div></li></ol></section>'
+      + '<button class="switch" data-act="remind" aria-pressed="'+state.remind+'"><div><b>Remind me at busy pickup zones</b><span class="s">A short nudge when you arrive</span></div><span class="tg" aria-hidden="true"></span></button>'
+      + '<section class="sec"><h2>Was this useful?</h2><div class="chips"><button class="chip" data-act="fb" data-v="yes">Yes</button><button class="chip" data-act="fb" data-v="no">Not really</button><button class="chip" data-act="fb" data-v="wrong">This is wrong</button></div></section>';
+    return shell('This week\'s tip', h, true);
+  }
+
+  function dispute(){
+    var r = byId(state.ride) || byId('r4');
+    var h = '<div style="padding-top:4px"><div class="kick">'+r.when+'</div><h1>Ask for a second look</h1></div>'
+      + '<section class="card" style="display:flex;justify-content:space-between;align-items:center"><div>'+stars(r.stars, r.stars<=3?'low':'')+'<div class="tags" style="margin-top:6px">'+r.tags.map(function(t){return '<span class="tag">'+t+'</span>'}).join('')+'</div></div><span class="pill dn">'+(r.delta||'')+'</span></section>'
+      + '<section class="sec"><h2>What is off?</h2><div class="chips">'
+      + REASONS.map(function(x){ return '<button class="chip" data-act="reason" data-v="'+x+'" aria-pressed="'+(state.reason===x)+'">'+x+'</button>'; }).join('')
+      + '</div></section>'
+      + '<section class="sec"><h2>Evidence we will attach</h2>'
+      + '<button class="check" data-act="ev" data-k="speed" aria-pressed="'+state.ev.speed+'"><span class="bx">'+(state.ev.speed?'✓':'')+'</span><div class="m"><b>Speed on this trip</b><span>Top speed 41 mph in a 40 zone</span></div></button>'
+      + '<button class="check" data-act="ev" data-k="brake" aria-pressed="'+state.ev.brake+'"><span class="bx">'+(state.ev.brake?'✓':'')+'</span><div class="m"><b>Braking</b><span>0 hard brakes</span></div></button>'
+      + '<button class="check" data-act="ev" data-k="route" aria-pressed="'+state.ev.route+'"><span class="bx">'+(state.ev.route?'✓':'')+'</span><div class="m"><b>Route</b><span>Matched the suggested route</span></div></button>'
+      + '<button class="check" data-act="file" aria-pressed="'+state.file+'"><span class="bx">'+(state.file?'✓':'')+'</span><div class="m"><b>'+(state.file?'Dashcam clip added':'Add a dashcam clip or screenshot')+'</b><span>'+(state.file?'wed_ride_clip.mp4':'Optional')+'</span></div></button></section>'
+      + '<section class="sec"><h2>Your side, in your words</h2><textarea id="note" placeholder="Anything the reviewer should know? Optional.">'+esc(state.note)+'</textarea></section>'
+      + '<button class="btn" style="margin-top:18px" data-act="submit"'+(state.reason?'':' disabled')+'>Send for review</button>'
+      + '<p class="fine">A person reviews this within 2 business days. Your standing won\'t change while they look.</p>';
+    return shell('Review a rating', h, true);
+  }
+
+  function submitted(){
+    var h = '<div style="padding-top:10px"><div class="kick">Case 48210</div><h1>We have it</h1></div>'
+      + '<p style="margin:8px 0 0;color:var(--a-muted)">You will hear back in the app. If the rating stands, you will see the reason.</p>'
+      + '<ul class="tl"><li class="done"><span class="n">✓</span><div><b>Received</b><span>Your trip data and note are attached</span></div></li>'
+      + '<li><span class="n">2</span><div><b>A person reviews it</b><span>Within 2 business days</span></div></li>'
+      + '<li><span class="n">3</span><div><b>You get the decision and the reason</b><span>In the app and by email</span></div></li></ul>'
+      + '<button class="btn" style="margin-top:8px" data-act="jump" data-s="home">Back to your week</button>';
+    return shell('Review sent', h, false);
+  }
+
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function render(resetScroll){
+    var prev = $('#body') ? $('#body').scrollTop : 0;
+    var s = state.screen;
+    var html = s==='home'?home(): s==='why'?why(): s==='ride'?rideView(): s==='action'?action(): s==='dispute'?dispute(): submitted();
+    $('#app').innerHTML = html;
+    $('#body').scrollTop = resetScroll ? 0 : prev;
+    var n = $('#note'); if (n) n.addEventListener('input', function(){ state.note = n.value; });
+  }
+
+  function toast(msg){
+    var t = $('#toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 1800);
+  }
+
+  function go(screen, ride){
+    state.stack.push({screen:state.screen, ride:state.ride});
+    state.screen = screen; if (ride) state.ride = ride;
+    render(true);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target.closest('[data-act]'); if (!t) return;
+    var a = t.getAttribute('data-act');
+    if (a==='tab'){
+      var v = t.getAttribute('data-v');
+      $('#view-proto').classList.toggle('hidden', v!=='proto');
+      $('#view-brief').classList.toggle('hidden', v!=='brief');
+      $('#tab-proto').setAttribute('aria-selected', v==='proto');
+      $('#tab-brief').setAttribute('aria-selected', v==='brief');
+      window.scrollTo(0,0);
+    } else if (a==='go'){ go(t.getAttribute('data-s'), t.getAttribute('data-r'));
+    } else if (a==='back'){ var p = state.stack.pop(); if (p){ state.screen=p.screen; state.ride=p.ride; } else { state.screen='home'; } render(true);
+    } else if (a==='jump'){
+      var s = t.getAttribute('data-s'), r = t.getAttribute('data-r');
+      state.stack = []; state.screen = 'home'; state.ride = null;
+      if (s==='dispute'){ state.stack.push({screen:'home',ride:null}); state.stack.push({screen:'ride',ride:r}); state.ride = r; state.screen='dispute'; }
+      else if (s==='action'){ state.stack.push({screen:'home',ride:null}); state.screen='action'; }
+      render(true);
+      if (window.matchMedia('(max-width:940px)').matches) window.scrollTo({top:0,behavior:'smooth'});
+    } else if (a==='reason'){ state.reason = t.getAttribute('data-v'); render(false);
+    } else if (a==='ev'){ var k = t.getAttribute('data-k'); state.ev[k] = !state.ev[k]; render(false);
+    } else if (a==='file'){ state.file = !state.file; render(false);
+    } else if (a==='remind'){ state.remind = !state.remind; render(false); toast(state.remind?'Reminder on':'Reminder off');
+    } else if (a==='fb'){ var f = t.getAttribute('data-v'); toast(f==='yes'?'Thanks. More like this next week.':'Thanks. We will adjust next week\'s tip.');
+    } else if (a==='submit'){ if (!state.reason) return; state.submitted = true; state.stack = []; state.screen = 'submitted'; render(true);
+    } else if (a==='reset'){ state = fresh(); render(true); }
+  });
+
+  render(true);
+})();
+</script>
+</body>
+</html>
